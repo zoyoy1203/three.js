@@ -207,6 +207,7 @@ class WebGLRenderer {
 
 		let _gl = context;
 
+    /** 获取canvas上下文 */
 		function getContext( contextNames, contextAttributes ) {
 
 			for ( let i = 0; i < contextNames.length; i ++ ) {
@@ -238,8 +239,12 @@ class WebGLRenderer {
 			if ( 'setAttribute' in canvas ) canvas.setAttribute( 'data-engine', `three.js r${REVISION}` );
 
 			// event listeners must be registered before WebGL context is created, see #12753
+      // 监听 绘图缓冲区丢失
 			canvas.addEventListener( 'webglcontextlost', onContextLost, false );
+      // 监听 绘图缓冲区恢复 一旦上下文恢复
+      // 在上下文丢失之前创建的webgl资源（如纹理和缓冲区）将不再有效。需要重新初始化WebGL应用程序的状态并重新创建资源。
 			canvas.addEventListener( 'webglcontextrestored', onContextRestore, false );
+      // 无法创建上下文，会触发webglcontextcreationerror事件
 			canvas.addEventListener( 'webglcontextcreationerror', onContextCreationError, false );
 
 			if ( _gl === null ) {
@@ -271,7 +276,7 @@ class WebGLRenderer {
 			}
 
 			// Some experimental-webgl implementations do not have getShaderPrecisionFormat
-
+      // getShaderPrecisionFormat()  返回一个新对象，描述指定着色器数字格式的范围和精度。
 			if ( _gl.getShaderPrecisionFormat === undefined ) {
 
 				_gl.getShaderPrecisionFormat = function () {
@@ -298,18 +303,23 @@ class WebGLRenderer {
 		let utils, bindingStates, uniformsGroups;
 
 		function initGLContext() {
-
+      // webgl相关扩展
 			extensions = new WebGLExtensions( _gl );
 
+      // webgl相关属性
 			capabilities = new WebGLCapabilities( _gl, extensions, parameters );
 
+      // 初始化webgl扩展
 			extensions.init( capabilities );
 
+      // 用来获取扩展的相关属性
 			utils = new WebGLUtils( _gl, extensions, capabilities );
 
+      // webgl相关处理方法
 			state = new WebGLState( _gl, extensions, capabilities );
-
+      // webgl相关信息
 			info = new WebGLInfo( _gl );
+      // 用于管理属性映射表
 			properties = new WebGLProperties();
 			textures = new WebGLTextures( _gl, extensions, state, properties, capabilities, utils, info );
 			cubemaps = new WebGLCubeMaps( _this );
@@ -577,8 +587,7 @@ class WebGLRenderer {
 
 		};
 
-		//
-
+		
 		this.dispose = function () {
 
 			canvas.removeEventListener( 'webglcontextlost', onContextLost, false );

@@ -12,6 +12,7 @@ function WebGLExtensions( gl ) {
 
 		let extension;
 
+    // 启用相关webgl扩展
 		switch ( name ) {
 
 			case 'WEBGL_depth_texture':
